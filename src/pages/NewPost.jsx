@@ -2,21 +2,25 @@ import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom';
+import { Dialog } from '@headlessui/react';
 
 const NewPost = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null); // For showing who is posting
+  const [user, setUser] = useState(null);
 
-  // Optionally fetch user from backend (optional UI improvement)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [success, setSuccess] = useState(null);
+
   useEffect(() => {
     fetch('http://localhost:5000/api/auth/me', {
       credentials: 'include',
     })
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.success) {
           setUser(data.user);
         }
@@ -28,7 +32,9 @@ const NewPost = () => {
     e.preventDefault();
 
     if (!title || !content) {
-      alert('Please fill all fields');
+      setModalMessage('Please fill all fields');
+      setSuccess(false);
+      setIsModalOpen(true);
       return;
     }
 
@@ -40,23 +46,29 @@ const NewPost = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // <-- sends cookie
+        credentials: 'include',
         body: JSON.stringify({ title, content }),
       });
 
       const data = await res.json();
 
-      if (data.success) {
-        alert('Post created successfully!');
-        navigate('/');
-      } else {
-        alert(data.message || 'Failed to create post');
-      }
+      setModalMessage(data.message || (data.success ? 'Post created successfully!' : 'Failed to create post'));
+      setSuccess(data.success);
+      setIsModalOpen(true);
     } catch (err) {
       console.error(err);
-      alert('Error creating post');
+      setModalMessage('Error creating post');
+      setSuccess(false);
+      setIsModalOpen(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    if (success) {
+      navigate('/');
     }
   };
 
@@ -92,6 +104,27 @@ const NewPost = () => {
           {loading ? 'Posting...' : 'Post'}
         </button>
       </form>
+
+      {/* Modal */}
+      <Dialog open={isModalOpen} onClose={handleCloseModal} className="relative z-50">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center px-4">
+          <Dialog.Panel className="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg">
+            <Dialog.Title className="text-lg font-bold mb-2">
+              {success ? 'Post Created' : 'Error'}
+            </Dialog.Title>
+            <p className="text-sm text-gray-700">{modalMessage}</p>
+            <div className="mt-4 text-right">
+              <button
+                onClick={handleCloseModal}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Close
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </div>
   );
 };
