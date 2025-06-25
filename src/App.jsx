@@ -27,7 +27,7 @@ function App() {
         <Route path="/login" element={<><Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} /><LoginForm setIsLoggedIn={setIsLoggedIn} /></>} />
         <Route path="/register" element={<><Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} /><RegisterForm /></>} />
         <Route path="/create" element={<><Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} /><NewPost /></>} />
-        <Route path="/post/:id" element={<SinglePost />} />
+        <Route path="/post/:id" element={<><Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} /><SinglePost /></>} />
 
       </Routes>
     </BrowserRouter>

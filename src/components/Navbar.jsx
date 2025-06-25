@@ -15,15 +15,15 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   };
 
   return (
-    <nav className="flex justify-between p-4 bg-gray-200">
-      <Link to="/" className="text-xl font-bold">Thoughts</Link>
+    <nav className="flex justify-between p-2 items-center bg-gray-200">
+      <Link to="/" className="text-2xl font-bold">Thoughts</Link>
 
       <div className="space-x-4">
         {isLoggedIn ? (
           // When logged in
           <>
-            <Link to="/create" className="px-4 py-2 bg-green-600 text-white rounded">New Post</Link>
-            <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded">Logout</button>
+            <Link to="/create" className="text-xl bg-black text-white p-3 rounded font-bold text-center hover:shadow-2xl hover:text-gray-300 ">New Post</Link>
+            <button onClick={handleLogout} className="text-xl bg-black text-white p-3 rounded font-bold text-center hover:shadow-2xl hover:text-gray-300">Logout</button>
           </>
         ) : (
           // When not logged in
